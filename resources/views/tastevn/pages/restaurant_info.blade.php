@@ -715,21 +715,21 @@
               photo_url = acmcfs.link_base_url + '/sensors/' + full['photo_name'];
             }
 
-            // if (full['photo_name'].startsWith('photos/')) {
-            //   photo_url = acmcfs.link_base_url + '/sensors/' + full['photo_name'];
-            // } else {
-            //   if (parseInt(full['local_storage']) && acmcfs.dev_mode != 'production') {
-            //     var d1 = new Date();
-            //     var d2 = new Date(full['time_photo']);
-            //
-            //     var s1 = d1.getFullYear() + '-' + d1.getMonth() + '-' + d1.getDate();
-            //     var s2 = d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate();
-            //
-            //     if (s1 == s2) {
-            //       photo_url = 'https://ai.block8910.com/sensors/' + full['photo_name'];
-            //     }
-            //   }
-            // }
+            if (full['photo_name'].startsWith('photos/')) {
+              photo_url = acmcfs.link_base_url + '/sensors/' + full['photo_name'];
+            } else {
+              if (parseInt(full['local_storage']) && acmcfs.dev_mode != 'production') {
+                var d1 = new Date();
+                var d2 = new Date(full['time_photo']);
+
+                var s1 = d1.getFullYear() + '-' + d1.getMonth() + '-' + d1.getDate();
+                var s2 = d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate();
+
+                if (s1 == s2) {
+                  photo_url = 'https://ai.block8910.com/sensors/' + full['photo_name'];
+                }
+              }
+            }
 
             return (
               '<div class="clearfix cursor-pointer" onclick="sensor_food_scan_info(' + full['id'] + ')">' +
@@ -802,19 +802,6 @@
                   });
                 }
               }
-
-              @if($viewer->is_dev())
-              var debug = $('input[name=debug]').val();
-                if (parseInt(debug)) {
-                  if (full['status'] == 'tested') {
-                    html += '<div class="badge bg-danger">Test Image</div>';
-                  } else {
-                    html += '<div><button type="button" class="btn btn-outline-secondary p-1" onclick="sensor_food_scan_api(this, 3)">tested?</button></div>';
-                  }
-                }
-
-                return ('<div>' + html + '</div>');
-              @endif
 
               return ('<div class="cursor-pointer" onclick="sensor_food_scan_info(' + full['id'] + ')">' + html + '</div>');
             }

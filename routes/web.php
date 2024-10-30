@@ -179,7 +179,6 @@ use App\Http\Controllers\tastevn\GuideController;
 use App\Http\Controllers\tastevn\PrinterController;
 use App\Http\Controllers\tastevn\ErrorController;
 use App\Http\Controllers\tastevn\TesterController;
-use App\Http\Controllers\tastevn\DevController;
 use App\Http\Controllers\tastevn\auth\RestaurantController;
 use App\Http\Controllers\tastevn\auth\SensorController;
 use App\Http\Controllers\tastevn\auth\NotificationController;
@@ -209,16 +208,6 @@ Route::post('/auth/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/tester', [TesterController::class, 'index']);
 Route::post('/tester/post', [TesterController::class, 'tester_post']);
 Route::post('/tester/photo/check', [TesterController::class, 'tester_photo_check']);
-Route::get('/tester/stats/date', [TesterController::class, 'excel_restaurant_stats_date']);
-//dev
-Route::get('/admin/devs', [DevController::class, 'index']);
-Route::post('/admin/dev/photo/check', [DevController::class, 'photo_check']);
-Route::post('/admin/dev/photo/check/hour/get', [DevController::class, 'photo_check_hour_get']);
-Route::post('/admin/dev/photo/check/hour/sync', [DevController::class, 'photo_check_hour_sync']);
-
-Route::get('/admin/dev/photo/upload/random', [DevController::class, 'photo_upload_random']);
-Route::post('/admin/dev/photo/upload/random/sensor', [DevController::class, 'photo_upload_random_sensor']);
-
 //guide
 Route::get('/guide/printer', [GuideController::class, 'printer']);
 Route::get('/guide/speaker', [GuideController::class, 'speaker']);
@@ -339,7 +328,6 @@ Route::post('/admin/kas/date/check/month', [KasController::class, 'date_check_mo
 Route::post('/admin/kas/date/check/restaurant', [KasController::class, 'date_check_restaurant']);
 Route::post('/admin/kas/date/check/restaurant/photo', [KasController::class, 'date_check_restaurant_photo']);
 Route::post('/admin/kas/date/check/restaurant/hour', [KasController::class, 'date_check_restaurant_hour']);
-Route::get('/admin/kas/report/month', [KasController::class, 'report_month']);
 //food
 Route::get('/admin/foods', [FoodController::class, 'index']);
 Route::post('/admin/food/get', [FoodController::class, 'get']);

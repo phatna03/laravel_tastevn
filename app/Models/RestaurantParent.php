@@ -285,7 +285,7 @@ class RestaurantParent extends Model
     $total_photos = RestaurantFoodScan::where('deleted', 0)
       ->whereDate('time_photo', $date)
       ->whereIn('restaurant_id', $select_sensors)
-      ->whereIn('status', ['checked', 'failed', 'edited'])
+      ->whereIn('status', ['checked', 'failed'])
       ->count();
 
     $total_orders = KasBill::query('kas_bills')
@@ -294,12 +294,11 @@ class RestaurantParent extends Model
       ->leftJoin('kas_restaurants', 'kas_restaurants.id', '=', 'kas_bills.kas_restaurant_id')
       ->where('kas_restaurants.restaurant_parent_id', $this->id)
       ->where('kas_bills.date_create', $date)
-      ->where('kas_bills.status', 'paid')
-      ->count();
+      ->get();
 
     return [
       'total_photos' => $total_photos,
-      'total_orders' => $total_orders,
+      'total_orders' => count($total_orders),
     ];
   }
 
