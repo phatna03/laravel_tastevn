@@ -78,7 +78,7 @@ class TesterController extends Controller
 
     $restaurant = RestaurantParent::find(1);
     $sensor = Restaurant::find(5);
-    $rfs = RestaurantFoodScan::find(113618);
+    $rfs = RestaurantFoodScan::find(129442);
     $date = date('Y-m-d');
     $user = User::find(4);
     $kas = KasWebhook::find(539);
@@ -88,38 +88,8 @@ class TesterController extends Controller
     //=======================================================================================
     //=======================================================================================
 
-    $api_url = 'http://171.244.46.137:9001/infer/workflows/tastvn/custom-workflow';
-    $img_url = 'https://s3.ap-southeast-1.amazonaws.com/cargo.tastevietnam.asia/58-5b-69-19-ad-83/SENSOR/1/2024-09-01/22/SENSOR_2024-09-01-22-03-38-968_124.jpg';
-
-    $ch = curl_init();
-    $headers = [
-      'Content-Type: application/json',
-      'Accept: application/json',
-    ];
-
-    $postData = [
-      'api_key' => 'uYUCzsUbWxWRrO15iar5',
-      'inputs' => [
-        'image' => [
-          'type' => 'url',
-          'value' => $img_url
-        ]
-      ]
-    ];
-
-    curl_setopt($ch, CURLOPT_URL, $api_url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $result = curl_exec($ch);
-    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    curl_close($ch);
-
-    $datas = (array)json_decode($result);
-
-    var_dump((array)$datas['outputs'][0]);
+    $api_result = (array)json_decode($rfs, true);
+    var_dump($api_result);
 
     die;
 

@@ -440,6 +440,22 @@ class SensorController extends Controller
         ? (array)$api_result['predictions'] : [];
     }
 
+    //new
+    $mod_custom = false;
+
+    $robots = [];
+    if (count($api_result) == 2) {
+      foreach ($api_result as $k => $dta) {
+        $robots[$k] = (array)$dta;
+      }
+
+      $robots = count($robots['v2']) ? $robots['v2'] : $robots['v1'];
+      $predictions = count($robots) && isset($robots['predictions']) ? (array)$robots['predictions'] : [];
+
+      $mod_custom = true;
+    }
+    //new
+
     $versions = (array)json_decode($rfs->rbf_version, true);
 
     //food
@@ -476,7 +492,10 @@ class SensorController extends Controller
       ->with('food_rbf_confidence', $rfs->rbf_confidence)
 
       ->with('versions', $versions)
+
       ->with('predictions', $predictions)
+      ->with('mod_custom', $mod_custom)
+
       ->with('ingredients_missing', $ingredients_missing)
       ->with('ingredients_found', $ingredients_found)
       ->with('ingredients_recipe', $ingredients_recipe)

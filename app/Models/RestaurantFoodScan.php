@@ -16,6 +16,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use App\Api\SysCore;
 use App\Api\SysRobo;
 use App\Api\SysZalo;
+use App\Api\SysTester;
 use App\Jobs\PhotoNotify;
 
 class RestaurantFoodScan extends Model
@@ -465,26 +466,39 @@ class RestaurantFoodScan extends Model
       . 'STEP_06_' . date('Y_m_d_H_i_s') . '_' . SysCore::time_to_ms());
     Storage::append($file_log, 'FILE= SCAN START');
 
-    $datas = SysRobo::photo_scan([
-      'img_url' => $img_url,
+//    $datas = SysRobo::photo_scan([
+//      'img_url' => $img_url,
+//
+//      'api_key' => $api_key,
+//      'dataset' => $dataset,
+//      'version' => $version,
+//
+//      'confidence' => SysRobo::_RBF_CONFIDENCE,
+//      'overlap' => SysRobo::_RBF_OVERLAP,
+//      'max_objects' => SysRobo::_RBF_MAX_OBJECTS,
+//
+//      'debug' => $debug,
+//    ]);
 
-      'api_key' => $api_key,
-      'dataset' => $dataset,
-      'version' => $version,
-
-      'confidence' => SysRobo::_RBF_CONFIDENCE,
-      'overlap' => SysRobo::_RBF_OVERLAP,
-      'max_objects' => SysRobo::_RBF_MAX_OBJECTS,
-
-      'debug' => $debug,
-    ]);
-//    var_dump($datas);
+    $datas = SysTester::photo_scan($img_url);
 
     $no_data = false;
-    if (!count($datas) || !$datas['status']
-      || ($datas['status'] && (!isset($datas['result']['predictions'])) || !count($datas['result']['predictions']))) {
+//    if (!count($datas) || !$datas['status']
+//      || ($datas['status'] && (!isset($datas['result']['predictions'])) || !count($datas['result']['predictions']))) {
+//      $no_data = true;
+//    }
+
+    if (!count($datas)) {
       $no_data = true;
     }
+
+    $robots = [];
+    foreach ($datas as $k => $dta) {
+      $robots[$k] = (array)$dta;
+    }
+
+    $robots = count($robots['v2']) ? $robots['v2'] : $robots['v1'];
+    $predictions = count($robots) && isset($robots['predictions']) ? (array)$robots['predictions'] : [];
 
     Storage::append($file_log, '*************************************************************************'
       . 'STEP_07_' . date('Y_m_d_H_i_s') . '_' . SysCore::time_to_ms());
@@ -492,7 +506,7 @@ class RestaurantFoodScan extends Model
 
     $this->update([
       'status' => $no_data ? 'failed' : 'scanned',
-      'total_seconds' => isset($datas['result']['time']) ? $datas['result']['time'] : $this->total_seconds,
+//      'total_seconds' => isset($datas['result']['time']) ? $datas['result']['time'] : $this->total_seconds,
       'rbf_api' => json_encode($datas),
       'rbf_version' => json_encode([
         'dataset' => $dataset,
@@ -582,6 +596,18 @@ class RestaurantFoodScan extends Model
       $predictions = isset($api_result['predictions']) && isset($api_result['predictions'])
         ? (array)$api_result['predictions'] : [];
     }
+
+    //new
+    $robots = [];
+    if (count($api_result) == 2) {
+      foreach ($api_result as $k => $dta) {
+        $robots[$k] = (array)$dta;
+      }
+
+      $robots = count($robots['v2']) ? $robots['v2'] : $robots['v1'];
+      $predictions = count($robots) && isset($robots['predictions']) ? (array)$robots['predictions'] : [];
+    }
+    //new
 
     $notification = isset($pars['notification']) ? (bool)$pars['notification'] : true;
     $sensor = $this->get_restaurant();

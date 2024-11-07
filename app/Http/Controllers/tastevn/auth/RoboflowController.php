@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Validator;
 use App\Api\SysCore;
 use App\Api\SysRobo;
+use App\Api\SysTester;
 use App\Jobs\PhotoUpload;
 //model
 use App\Models\User;
@@ -131,35 +132,49 @@ class RoboflowController extends Controller
           $img_url = SysRobo::photo_1024($img_url);
         }
 
-        $datas = SysRobo::photo_scan([
-          'img_url' => $img_url,
+//        $datas = SysRobo::photo_scan([
+//          'img_url' => $img_url,
+//
+//          'api_key' => $api_key,
+//          'dataset' => $dataset,
+//          'version' => $version,
+//
+//          'confidence' => $confidence,
+//          'overlap' => $overlap,
+//          'max_objects' => $max_objects,
+//
+//          'debug' => $debug,
+//
+//          'type' => 'modal_testing',
+//        ]);
 
-          'api_key' => $api_key,
-          'dataset' => $dataset,
-          'version' => $version,
-
-          'confidence' => $confidence,
-          'overlap' => $overlap,
-          'max_objects' => $max_objects,
-
-          'debug' => $debug,
-
-          'type' => 'modal_testing',
-        ]);
+        $datas = SysTester::photo_scan($img_url);
       }
 
       $no_data = false;
-      if (!count($datas) || !$datas['status']
-        || ($datas['status'] && (!isset($datas['result']['predictions'])) || !count($datas['result']['predictions']))) {
+//      if (!count($datas) || !$datas['status']
+//        || ($datas['status'] && (!isset($datas['result']['predictions'])) || !count($datas['result']['predictions']))) {
+//        $no_data = true;
+//      }
+
+      if (!count($datas)) {
         $no_data = true;
       }
 
+      $robots = [];
+      foreach ($datas as $k => $dta) {
+        $robots[$k] = (array)$dta;
+      }
+
+      $robots = count($robots['v2']) ? $robots['v2'] : $robots['v1'];
+      $predictions = count($robots) && isset($robots['predictions']) ? (array)$robots['predictions'] : [];
+//      echo '<pre>';var_dump($predictions);die;
+
       if (!$no_data) {
-
         $status = true;
-        $predictions = $datas['result']['predictions'];
-        if (count($predictions)) {
 
+//        $predictions = $datas['result']['predictions'];
+        if (count($predictions)) {
           //ingredients
           $ingredients_found = SysRobo::ingredients_compact($predictions);
           if (count($ingredients_found)) {

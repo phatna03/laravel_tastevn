@@ -129,12 +129,20 @@
 
     @if(count($predictions))
       <ul class="cmt-wrapper">
-        @if(count($versions) && isset($versions['dataset']))
+        @if($mod_custom)
           <li class="cmt-itm">
             <div class="d-flex overflow-hidden">
-              <span>Dataset: {{$versions['dataset'] . '/' . $versions['version']}}</span>
+              <span class="badge bg-danger">Custom Version</span>
             </div>
           </li>
+        @else
+          @if(count($versions) && isset($versions['dataset']))
+            <li class="cmt-itm">
+              <div class="d-flex overflow-hidden">
+                <span>Dataset: {{$versions['dataset'] . '/' . $versions['version']}}</span>
+              </div>
+            </li>
+          @endif
         @endif
         @php
           $count = 0;
